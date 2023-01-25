@@ -7,6 +7,8 @@
 #include "displayapp/screens/NotificationIcon.h"
 #include "components/settings/Settings.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "components/heartrate/HeartRateController.h"
+#include "components/motion/MotionController.h"
 
 LV_IMG_DECLARE(bg_clock);
 
@@ -48,14 +50,18 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
                                  Controllers::Battery& batteryController,
                                  Controllers::Ble& bleController,
                                  Controllers::NotificationManager& notificationManager,
-                                 Controllers::Settings& settingsController)
+                                 Controllers::Settings& settingsController,
+                                 Controllers::HeartRateController& heartRateController,
+                                 Controllers::MotionController& motionController)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
     notificationManager {notificationManager},
-    settingsController {settingsController} {
+    settingsController {settingsController},
+    heartRateController {heartRateController},
+    motionController {motionController} {
 
   sHour = 99;
   sMinute = 99;
@@ -67,6 +73,36 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
 
   batteryIcon.Create(lv_scr_act());
   lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+
+  heartbeatContainer = lv_cont_create(lv_scr_act(), nullptr);
+  lv_obj_align(heartbeatContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 35);
+  lv_cont_set_layout(heartbeatContainer, LV_LAYOUT_ROW_MID);
+  lv_cont_set_fit(heartbeatContainer, LV_FIT_TIGHT);
+  lv_obj_set_style_local_radius(heartbeatContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_bg_opa(heartbeatContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  heartbeatIcon = lv_label_create(heartbeatContainer, nullptr);
+  lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
+  lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
+
+  heartbeatValue = lv_label_create(heartbeatContainer, nullptr);
+  lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
+  lv_label_set_text_static(heartbeatValue, "");
+
+  stepContainer = lv_cont_create(lv_scr_act(), nullptr);
+  lv_obj_align(stepContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 63);
+  lv_cont_set_layout(stepContainer, LV_LAYOUT_ROW_MID);
+  lv_cont_set_fit(stepContainer, LV_FIT_TIGHT);
+  lv_obj_set_style_local_radius(stepContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_bg_opa(stepContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  stepIcon = lv_label_create(stepContainer, nullptr);
+  lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
+  lv_label_set_text_static(stepIcon, Symbols::shoe);
+
+  stepValue = lv_label_create(stepContainer, nullptr);
+  lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
+  lv_label_set_text_static(stepValue, "0");
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
@@ -214,5 +250,26 @@ void WatchFaceAnalog::Refresh() {
       currentDayOfWeek = dayOfWeek;
       currentDay = day;
     }
+  }
+
+  heartbeat = heartRateController.HeartRate();
+  heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
+  if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
+    if (heartbeatRunning.Get()) {
+      lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
+      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
+    } else {
+      lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
+      lv_label_set_text_static(heartbeatValue, "");
+    }
+
+    lv_obj_realign(heartbeatContainer);
+  }
+
+  stepCount = motionController.NbSteps();
+  motionSensorOk = motionController.IsSensorOk();
+  if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
+    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
+    lv_obj_realign(stepContainer);
   }
 }
