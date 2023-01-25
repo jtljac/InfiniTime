@@ -56,12 +56,11 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
-    batteryController {batteryController},
-    bleController {bleController},
     notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController} {
+    motionController {motionController},
+    statusIcons(batteryController, bleController){
 
   sHour = 99;
   sMinute = 99;
@@ -71,8 +70,7 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_img_set_src(bg_clock_img, &bg_clock);
   lv_obj_align(bg_clock_img, nullptr, LV_ALIGN_CENTER, 0, 0);
 
-  batteryIcon.Create(lv_scr_act());
-  lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  statusIcons.Create();
 
   heartbeatContainer = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_align(heartbeatContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 35);
@@ -212,21 +210,8 @@ void WatchFaceAnalog::UpdateClock() {
   }
 }
 
-void WatchFaceAnalog::SetBatteryIcon() {
-  auto batteryPercent = batteryPercentRemaining.Get();
-  batteryIcon.SetBatteryPercentage(batteryPercent);
-}
-
 void WatchFaceAnalog::Refresh() {
-  isCharging = batteryController.IsCharging();
-  if (isCharging.IsUpdated()) {
-    batteryIcon.SetCharging(isCharging.Get());
-  }
-
-  batteryPercentRemaining = batteryController.PercentRemaining();
-  if (batteryPercentRemaining.IsUpdated()) {
-    SetBatteryIcon();
-  }
+  statusIcons.Update();
 
   notificationState = notificationManager.AreNewNotificationsAvailable();
 

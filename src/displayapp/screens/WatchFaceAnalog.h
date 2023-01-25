@@ -9,6 +9,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
+#include "displayapp/widgets/StatusIcons.h"
 #include <displayapp/screens/BatteryIcon.h>
 
 namespace Pinetime {
@@ -46,8 +47,6 @@ namespace Pinetime {
         Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
         uint8_t currentDay = 0;
 
-        DirtyValue<uint8_t> batteryPercentRemaining {0};
-        DirtyValue<bool> isCharging {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         DirtyValue<bool> notificationState {false};
 
@@ -80,22 +79,20 @@ namespace Pinetime {
         lv_obj_t* heartbeatContainer;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
+
         lv_obj_t* stepContainer;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
 
-        BatteryIcon batteryIcon;
+        Widgets::StatusIcons statusIcons;
 
         const Controllers::DateTime& dateTimeController;
-        Controllers::Battery& batteryController;
-        Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
 
         void UpdateClock();
-        void SetBatteryIcon();
 
         lv_task_t* taskRefresh;
 
