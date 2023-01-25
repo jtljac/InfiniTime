@@ -72,23 +72,8 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
 
   statusIcons.Create();
 
-  heartbeatContainer = lv_cont_create(lv_scr_act(), nullptr);
-  lv_obj_align(heartbeatContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 35);
-  lv_cont_set_layout(heartbeatContainer, LV_LAYOUT_ROW_MID);
-  lv_cont_set_fit(heartbeatContainer, LV_FIT_TIGHT);
-  lv_obj_set_style_local_radius(heartbeatContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_bg_opa(heartbeatContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
-
-  heartbeatIcon = lv_label_create(heartbeatContainer, nullptr);
-  lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
-  lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
-
-  heartbeatValue = lv_label_create(heartbeatContainer, nullptr);
-  lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
-  lv_label_set_text_static(heartbeatValue, "");
-
   stepContainer = lv_cont_create(lv_scr_act(), nullptr);
-  lv_obj_align(stepContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 63);
+  lv_obj_align(stepContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 35);
   lv_cont_set_layout(stepContainer, LV_LAYOUT_ROW_MID);
   lv_cont_set_fit(stepContainer, LV_FIT_TIGHT);
   lv_obj_set_style_local_radius(stepContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -102,6 +87,21 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text_static(stepValue, "0");
 
+  heartbeatContainer = lv_cont_create(lv_scr_act(), nullptr);
+  lv_obj_align(heartbeatContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 63);
+  lv_cont_set_layout(heartbeatContainer, LV_LAYOUT_ROW_MID);
+  lv_cont_set_fit(heartbeatContainer, LV_FIT_TIGHT);
+  lv_obj_set_style_local_radius(heartbeatContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_bg_opa(heartbeatContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  heartbeatIcon = lv_label_create(heartbeatContainer, nullptr);
+  lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
+  lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
+
+  heartbeatValue = lv_label_create(heartbeatContainer, nullptr);
+  lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
+  lv_label_set_text_static(heartbeatValue, "");
+
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
@@ -110,7 +110,7 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   // Date - Day / Week day
 
   label_date_day = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(label_date_day, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
+  lv_obj_set_style_local_text_color(label_date_day, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_label_set_text_fmt(label_date_day, "%s\n%02i", dateTimeController.DayOfWeekShortToString(), dateTimeController.Day());
   lv_label_set_align(label_date_day, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label_date_day, nullptr, LV_ALIGN_CENTER, 50, 0);
