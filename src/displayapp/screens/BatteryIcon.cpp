@@ -2,6 +2,8 @@
 #include <cstdint>
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/icons/battery/batteryicon.c"
+#include "displayapp/icons/battery/batterychargingicon.c"
+#include "displayapp/icons/battery/batterychargedicon.c"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -14,6 +16,12 @@ void BatteryIcon::Create(lv_obj_t* parent) {
   lv_obj_set_width(batteryJuice, 8);
   lv_obj_align(batteryJuice, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -2, -2);
   lv_obj_set_style_local_radius(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  batteryChargingImg = lv_img_create(batteryImg, nullptr);
+  lv_img_set_src(batteryChargingImg, &batterychargingicon);
+  lv_obj_set_style_local_image_recolor(batteryChargingImg, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_align(batteryChargingImg, nullptr, LV_ALIGN_CENTER, 0, 1);
+  lv_obj_set_hidden(batteryChargingImg, true);
 }
 
 lv_obj_t* BatteryIcon::GetObject() {
@@ -23,6 +31,22 @@ lv_obj_t* BatteryIcon::GetObject() {
 void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
   lv_obj_set_height(batteryJuice, percentage * 14 / 100);
   lv_obj_realign(batteryJuice);
+
+  if (percentage == 100) {
+    lv_img_set_src(batteryChargingImg, &batterychargedicon);
+  } else {
+    lv_img_set_src(batteryChargingImg, &batterychargingicon);
+  }
+}
+
+void BatteryIcon::SetCharging(bool charging) {
+  if (charging) {
+    lv_obj_set_hidden(batteryChargingImg, false);
+    lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
+  } else {
+    lv_obj_set_hidden(batteryChargingImg, true);
+    lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  }
 }
 
 void BatteryIcon::SetColor(lv_color_t color) {

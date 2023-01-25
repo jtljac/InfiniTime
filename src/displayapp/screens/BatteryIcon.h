@@ -11,6 +11,7 @@ namespace Pinetime {
 
         void SetColor(lv_color_t);
         void SetBatteryPercentage(uint8_t percentage);
+        void SetCharging(bool charging);
         lv_obj_t* GetObject();
 
         static const char* GetUnknownIcon();
@@ -18,6 +19,7 @@ namespace Pinetime {
 
       private:
         lv_obj_t* batteryImg;
+        lv_obj_t* batteryChargingImg;
         lv_obj_t* batteryJuice;
       };
     }

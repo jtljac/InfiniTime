@@ -66,7 +66,6 @@ namespace Pinetime {
         lv_style_t second_line_style;
 
         lv_obj_t* label_date_day;
-        lv_obj_t* plugIcon;
         lv_obj_t* notificationIcon;
 
         BatteryIcon batteryIcon;
