@@ -17,18 +17,17 @@ void StatusIcons::Create() {
   bleIcon = lv_label_create(container, nullptr);
   lv_label_set_text_static(bleIcon, Screens::Symbols::bluetooth);
 
-  batteryPlug = lv_label_create(container, nullptr);
-  lv_label_set_text_static(batteryPlug, Screens::Symbols::plug);
-
   batteryIcon.Create(container);
 
   lv_obj_align(container, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+
+  Update();
 }
 
 void StatusIcons::Update() {
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
-    lv_obj_set_hidden(batteryPlug, !powerPresent.Get());
+    batteryIcon.SetCharging(powerPresent.Get());
   }
 
   batteryPercentRemaining = batteryController.PercentRemaining();
