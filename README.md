@@ -11,7 +11,7 @@ My personal modification of Infinitime, changes are as follows:
   - The Battery Juice is green during charging
 - Customised analogue watch face
 - Restructured navigation to implement a "home row" with useful apps available by swiping left and right from the clock
-- Increased timer vibrate to 1000 Ticks
+- Increased timer vibrate to 500 Ticks
 ## Pictures:
 ### Clock face:
 ![clock](doc/readmePictures/clock.png "Clock face")
