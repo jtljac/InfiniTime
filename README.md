@@ -1,8 +1,28 @@
-# [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
+# [InfiniTime](https://github.com/jtljac/InfiniTime)
 
-[![Build PineTime Firmware](https://github.com/InfiniTimeOrg/InfiniTime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)](https://github.com/InfiniTimeOrg/InfiniTime/actions)
+[![Build PineTime Firmware](https://github.com/jtljac/InfiniTime/workflows/main.yml/badge.svg?branch=master)](https://github.com/jtljac/InfiniTime/actions)
 
 ![InfiniTime logo](doc/logo/infinitime-logo-small.jpg "InfiniTime Logo")
+
+My personal modification of Infinitime, changes are as follows:
+- Customised battery icon
+  - Contains a lightning bolt while charging
+  - Contains a plug when fully charged
+  - The Battery Juice is green during charging
+- Customised analogue watch face
+- Restructured navigation to implement a "home row" with useful apps available by swiping left and right from the clock
+- Increased timer vibrate to 1000 Ticks
+## Pictures:
+### Clock face:
+![clock](doc/readmePictures/clock.png "Clock face")
+### Battery:
+#### Charging:
+![clock](doc/readmePictures/batteryCharging.png "Charging")
+#### Charged:
+![clock](doc/readmePictures/batteryCharged.png "Charged")
+---
+
+# Original Description: [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
 
 Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/pinetime/) with many features, written in modern C++.
 
