@@ -6,6 +6,7 @@ public:
   T Pop();
   void Push(T element);
   void Reset();
+  bool Empty();
   T Top();
 
 private:
@@ -31,6 +32,10 @@ template <typename T, size_t N> void StaticStack<T, N>::Push(T element) {
 
 template <typename T, size_t N> void StaticStack<T, N>::Reset() {
   stackPointer = 0;
+}
+
+template <typename T, size_t N> bool StaticStack<T, N>::Empty() {
+  return stackPointer == 0;
 }
 
 template <typename T, size_t N> T StaticStack<T, N>::Top() {

@@ -108,16 +108,15 @@ namespace Pinetime {
       static constexpr uint8_t itemSize = 1;
 
       std::unique_ptr<Screens::Screen> currentScreen;
-
       Apps currentApp = Apps::None;
-      Apps returnToApp = Apps::None;
-      FullRefreshDirections returnDirection = FullRefreshDirections::None;
-      TouchEvents returnTouchEvent = TouchEvents::None;
+      std::array<Apps, 5> homeRow{Apps::Clock, Apps::Music, Apps::HeartRate, Apps::Steps, Apps::QuickSettings};
+      uint8_t homeIndex = 0;
 
-      TouchEvents GetGesture();
       static void Process(void* instance);
       void InitHw();
       void Refresh();
+      bool IsCurrentlyHomeRow();
+      void LoadHomeScreen(FullRefreshDirections direction = FullRefreshDirections::Down);
       void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void PushMessageToSystemTask(Pinetime::System::Messages message);
@@ -127,9 +126,16 @@ namespace Pinetime {
       System::BootErrors bootError;
       void ApplyBrightness();
 
+      struct ReturnStackObject {
+        Apps application;
+        FullRefreshDirections direction;
+      };
+
       static constexpr size_t returnAppStackSize = 10;
-      StaticStack<Apps, returnAppStackSize> returnAppStack;
-      StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
+      StaticStack<ReturnStackObject, returnAppStackSize> returnAppStack;
+
+      void LoadPreviousScreen();
+      TouchEvents LoadDirToReturnSwipe(FullRefreshDirections directions);
     };
   }
 }
