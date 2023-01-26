@@ -18,8 +18,8 @@ namespace Pinetime {
     class Battery;
     class Ble;
     class NotificationManager;
-      class HeartRateController;
-      class MotionController;
+    class HeartRateController;
+    class MotionController;
   }
 
   namespace Applications {

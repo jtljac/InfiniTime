@@ -3,12 +3,15 @@
 #include <cstdint>
 #include <lvgl/lvgl.h>
 #include "displayapp/screens/Screen.h"
+#include "displayapp/widgets/StatusIcons.h"
 #include <components/motion/MotionController.h>
 
 namespace Pinetime {
 
   namespace Controllers {
     class Settings;
+    class Battery;
+    class Ble;
   }
 
   namespace Applications {
@@ -16,7 +19,7 @@ namespace Pinetime {
 
       class Steps : public Screen {
       public:
-        Steps(DisplayApp* app, Controllers::MotionController& motionController, Controllers::Settings& settingsController);
+        Steps(DisplayApp* app, Controllers::MotionController& motionController, Controllers::Settings& settingsController, Controllers::Battery& batteryController, Controllers::Ble& bleController);
         ~Steps() override;
 
         void Refresh() override;
@@ -33,6 +36,8 @@ namespace Pinetime {
         lv_obj_t* resetBtn;
         lv_obj_t* resetButtonLabel;
         lv_obj_t* tripLabel;
+
+        Widgets::StatusIcons statusIcons;
 
         uint32_t stepsCount;
 

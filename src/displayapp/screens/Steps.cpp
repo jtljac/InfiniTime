@@ -12,8 +12,13 @@ static void lap_event_handler(lv_obj_t* obj, lv_event_t event) {
 
 Steps::Steps(Pinetime::Applications::DisplayApp* app,
              Controllers::MotionController& motionController,
-             Controllers::Settings& settingsController)
-  : Screen(app), motionController {motionController}, settingsController {settingsController} {
+             Controllers::Settings& settingsController,
+             Controllers::Battery& batteryController,
+             Controllers::Ble& bleController)
+  : Screen(app),
+    motionController {motionController},
+    settingsController {settingsController},
+    statusIcons(batteryController, bleController) {
 
   stepsArc = lv_arc_create(lv_scr_act(), nullptr);
 
@@ -64,6 +69,8 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
   lv_obj_align(tripLabel, lstepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
 
+  statusIcons.Create();
+
   taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
 }
 
@@ -73,6 +80,8 @@ Steps::~Steps() {
 }
 
 void Steps::Refresh() {
+  statusIcons.Update();
+
   stepsCount = motionController.NbSteps();
   currentTripSteps = motionController.GetTripSteps();
 

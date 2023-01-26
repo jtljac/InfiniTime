@@ -4,12 +4,15 @@
 #include <chrono>
 #include "displayapp/screens/Screen.h"
 #include "systemtask/SystemTask.h"
+#include "displayapp/widgets/StatusIcons.h"
 #include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_core/lv_obj.h>
 
 namespace Pinetime {
   namespace Controllers {
     class HeartRateController;
+    class Battery;
+    class Ble;
   }
 
   namespace Applications {
@@ -17,7 +20,7 @@ namespace Pinetime {
 
       class HeartRate : public Screen {
       public:
-        HeartRate(DisplayApp* app, Controllers::HeartRateController& HeartRateController, System::SystemTask& systemTask);
+        HeartRate(DisplayApp* app, Controllers::HeartRateController& HeartRateController, Controllers::Battery& batteryController, Controllers::Ble& bleController, System::SystemTask& systemTask);
         ~HeartRate() override;
 
         void Refresh() override;
@@ -33,6 +36,8 @@ namespace Pinetime {
         lv_obj_t* label_status;
         lv_obj_t* btn_startStop;
         lv_obj_t* label_startStop;
+
+        Widgets::StatusIcons statusIcons;
 
         lv_task_t* taskRefresh;
       };

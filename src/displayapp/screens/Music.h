@@ -21,6 +21,8 @@
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <string>
 #include "displayapp/screens/Screen.h"
+#include "components/battery/BatteryController.h"
+#include "displayapp/widgets/StatusIcons.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -31,7 +33,7 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(DisplayApp* app, Pinetime::Controllers::MusicService& music);
+        Music(DisplayApp* app, Controllers::MusicService& music, Controllers::Battery& batteryController, Controllers::Ble& bleController);
 
         ~Music() override;
 
@@ -58,6 +60,8 @@ namespace Pinetime {
         lv_obj_t* txtTrackDuration;
 
         lv_style_t btn_style;
+
+        Widgets::StatusIcons statusIcons;
 
         /** For the spinning disc animation */
         bool frameB;

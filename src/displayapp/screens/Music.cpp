@@ -47,7 +47,14 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
  */
-Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::MusicService& music) : Screen(app), musicService(music) {
+Music::Music(
+    Pinetime::Applications::DisplayApp* app,
+    Pinetime::Controllers::MusicService& music,
+    Pinetime::Controllers::Battery& batteryController,
+    Pinetime::Controllers::Ble& bleController)
+    : Screen(app),
+      musicService(music),
+      statusIcons(batteryController, bleController) {
   lv_obj_t* label;
 
   lv_style_init(&btn_style);
@@ -140,6 +147,8 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
 
   musicService.event(Controllers::MusicService::EVENT_MUSIC_OPEN);
 
+  statusIcons.Create();
+
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
@@ -150,6 +159,8 @@ Music::~Music() {
 }
 
 void Music::Refresh() {
+  statusIcons.Update();
+
   if (artist != musicService.getArtist()) {
     artist = musicService.getArtist();
     lv_label_set_text(txtArtist, artist.data());
