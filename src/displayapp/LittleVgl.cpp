@@ -3,7 +3,6 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
-#include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 
 using namespace Pinetime::Components;
@@ -35,7 +34,7 @@ bool touchpad_read(lv_indev_drv_t* indev_drv, lv_indev_data_t* data) {
   return lvgl->GetTouchPadInfo(data);
 }
 
-LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel) : lcd {lcd}, touchPanel {touchPanel} {
+LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd) : lcd {lcd} {
 }
 
 void LittleVgl::Init() {
@@ -180,15 +179,34 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   lv_disp_flush_ready(&disp_drv);
 }
 
-void LittleVgl::SetNewTouchPoint(uint16_t x, uint16_t y, bool contact) {
-  tap_x = x;
-  tap_y = y;
-  tapped = contact;
+void LittleVgl::SetNewTouchPoint(int16_t x, int16_t y, bool contact) {
+  if (contact) {
+    if (!isCancelled) {
+      touchPoint = {x, y};
+      tapped = true;
+    }
+  } else {
+    if (isCancelled) {
+      touchPoint = {-1, -1};
+      tapped = false;
+      isCancelled = false;
+    } else {
+      touchPoint = {x, y};
+      tapped = false;
+    }
+  }
+}
+
+void LittleVgl::CancelTap() {
+  if (tapped) {
+    isCancelled = true;
+    touchPoint = {-1, -1};
+  }
 }
 
 bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
-  ptr->point.x = tap_x;
-  ptr->point.y = tap_y;
+  ptr->point.x = touchPoint.x;
+  ptr->point.y = touchPoint.y;
   if (tapped) {
     ptr->state = LV_INDEV_STATE_PR;
   } else {

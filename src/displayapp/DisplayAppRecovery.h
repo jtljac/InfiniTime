@@ -48,9 +48,9 @@ namespace Pinetime {
     public:
       DisplayApp(Drivers::St7789& lcd,
                  Components::LittleVgl& lvgl,
-                 Drivers::Cst816S&,
-                 Controllers::Battery& batteryController,
-                 Controllers::Ble& bleController,
+                 const Drivers::Cst816S&,
+                 const Controllers::Battery& batteryController,
+                 const Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
                  Drivers::WatchdogView& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
@@ -80,7 +80,7 @@ namespace Pinetime {
       void InitHw();
       void Refresh();
       Pinetime::Drivers::St7789& lcd;
-      Controllers::Ble& bleController;
+      const Controllers::Ble& bleController;
 
       static constexpr uint8_t queueSize = 10;
       static constexpr uint8_t itemSize = 1;

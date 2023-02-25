@@ -61,9 +61,9 @@ namespace {
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Components::LittleVgl& lvgl,
-                       Drivers::Cst816S& touchPanel,
-                       Controllers::Battery& batteryController,
-                       Controllers::Ble& bleController,
+                       const Drivers::Cst816S& touchPanel,
+                       const Controllers::Battery& batteryController,
+                       const Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
                        Drivers::WatchdogView& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
@@ -237,6 +237,7 @@ void DisplayApp::Refresh() {
         if (state != States::Running) {
           break;
         }
+        lvgl.SetNewTouchPoint(touchHandler.GetX(), touchHandler.GetY(), touchHandler.IsTouching());
         auto gesture = touchHandler.GestureGet();
         if (gesture == TouchEvents::None) {
           break;
@@ -280,7 +281,7 @@ void DisplayApp::Refresh() {
             LoadPreviousScreen();
           }
         } else {
-          touchHandler.CancelTap();
+          lvgl.CancelTap();
         }
       } break;
       case Messages::ButtonPushed:
@@ -361,7 +362,7 @@ void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direc
 }
 
 void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
-  touchHandler.CancelTap();
+  lvgl.CancelTap();
   ApplyBrightness();
 
   currentScreen.reset(nullptr);

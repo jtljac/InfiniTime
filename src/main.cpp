@@ -87,7 +87,7 @@ Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
   #include "displayapp/LittleVgl.h"
   #include "displayapp/DisplayApp.h"
 #endif
-Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
+Pinetime::Components::LittleVgl lvgl {lcd};
 
 Pinetime::Drivers::Bma421 motionSensor {twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
@@ -111,7 +111,7 @@ Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
 Pinetime::Controllers::AlarmController alarmController {dateTimeController};
-Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
+Pinetime::Controllers::TouchHandler touchHandler;
 Pinetime::Controllers::ButtonHandler buttonHandler;
 Pinetime::Controllers::BrightnessController brightnessController {};
 

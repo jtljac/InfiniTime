@@ -20,8 +20,8 @@ auto ApplicationList::CreateScreenList() const {
 
 ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
                                  Pinetime::Controllers::Settings& settingsController,
-                                 Pinetime::Controllers::Battery& batteryController,
-                                 Pinetime::Controllers::Ble& bleController,
+                                 const Pinetime::Controllers::Battery& batteryController,
+                                 const Pinetime::Controllers::Ble& bleController,
                                  Controllers::DateTime& dateTimeController)
   : Screen(app),
     settingsController {settingsController},
