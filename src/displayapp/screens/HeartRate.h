@@ -20,7 +20,7 @@ namespace Pinetime {
 
       class HeartRate : public Screen {
       public:
-        HeartRate(DisplayApp* app, Controllers::HeartRateController& HeartRateController, Controllers::Battery& batteryController, Controllers::Ble& bleController, System::SystemTask& systemTask);
+        HeartRate(Controllers::HeartRateController& HeartRateController, Controllers::Battery& batteryController, Controllers::Ble& bleController, System::SystemTask& systemTask);
         ~HeartRate() override;
 
         void Refresh() override;

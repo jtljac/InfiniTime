@@ -28,13 +28,11 @@ namespace {
   }
 }
 
-HeartRate::HeartRate(Pinetime::Applications::DisplayApp* app,
-                     Controllers::HeartRateController& heartRateController,
+HeartRate::HeartRate(Controllers::HeartRateController& heartRateController,
                      Controllers::Battery& batteryController,
                      Controllers::Ble& bleController,
                      System::SystemTask& systemTask)
-  : Screen(app),
-    heartRateController {heartRateController},
+  : heartRateController {heartRateController},
     systemTask {systemTask},
     statusIcons(batteryController, bleController){
   bool isHrRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;

@@ -10,13 +10,11 @@ static void lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   steps->lapBtnEventHandler(event);
 }
 
-Steps::Steps(Pinetime::Applications::DisplayApp* app,
-             Controllers::MotionController& motionController,
+Steps::Steps(Controllers::MotionController& motionController,
              Controllers::Settings& settingsController,
              Controllers::Battery& batteryController,
              Controllers::Ble& bleController)
-  : Screen(app),
-    motionController {motionController},
+  : motionController {motionController},
     settingsController {settingsController},
     statusIcons(batteryController, bleController) {
 

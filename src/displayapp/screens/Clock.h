@@ -21,8 +21,7 @@ namespace Pinetime {
     namespace Screens {
       class Clock : public Screen {
       public:
-        Clock(DisplayApp* app,
-              Controllers::DateTime& dateTimeController,
+        Clock(Controllers::DateTime& dateTimeController,
               const Controllers::Battery& batteryController,
               const Controllers::Ble& bleController,
               Controllers::NotificationManager& notificationManager,

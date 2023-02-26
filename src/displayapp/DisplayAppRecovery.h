@@ -7,20 +7,18 @@
 #include <queue.h>
 #include "components/gfx/Gfx.h"
 #include "drivers/Cst816s.h"
-#include <date/date.h>
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
 #include "BootErrors.h"
 #include "displayapp/TouchEvents.h"
 #include "displayapp/Apps.h"
 #include "displayapp/Messages.h"
-#include "displayapp/DummyLittleVgl.h"
 
 namespace Pinetime {
   namespace Drivers {
     class St7789;
     class Cst816S;
-    class WatchdogView;
+    class Watchdog;
   }
 
   namespace Controllers {
@@ -47,12 +45,11 @@ namespace Pinetime {
     class DisplayApp {
     public:
       DisplayApp(Drivers::St7789& lcd,
-                 Components::LittleVgl& lvgl,
                  const Drivers::Cst816S&,
                  const Controllers::Battery& batteryController,
                  const Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
-                 Drivers::WatchdogView& watchdog,
+                 const Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Controllers::Settings& settingsController,
