@@ -29,8 +29,8 @@ namespace {
 }
 
 HeartRate::HeartRate(Controllers::HeartRateController& heartRateController,
-                     Controllers::Battery& batteryController,
-                     Controllers::Ble& bleController,
+                     const Controllers::Battery& batteryController,
+                     const Controllers::Ble& bleController,
                      System::SystemTask& systemTask)
   : heartRateController {heartRateController},
     systemTask {systemTask},

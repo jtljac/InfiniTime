@@ -19,7 +19,7 @@ namespace Pinetime {
 
       class Steps : public Screen {
       public:
-        Steps(Controllers::MotionController& motionController, Controllers::Settings& settingsController, Controllers::Battery& batteryController, Controllers::Ble& bleController);
+        Steps(Controllers::MotionController& motionController, Controllers::Settings& settingsController, const Controllers::Battery& batteryController, const Controllers::Ble& bleController);
         ~Steps() override;
 
         void Refresh() override;

@@ -12,8 +12,8 @@ static void lap_event_handler(lv_obj_t* obj, lv_event_t event) {
 
 Steps::Steps(Controllers::MotionController& motionController,
              Controllers::Settings& settingsController,
-             Controllers::Battery& batteryController,
-             Controllers::Ble& bleController)
+             const Controllers::Battery& batteryController,
+             const Controllers::Ble& bleController)
   : motionController {motionController},
     settingsController {settingsController},
     statusIcons(batteryController, bleController) {

@@ -33,7 +33,7 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(Controllers::MusicService& music, Controllers::Battery& batteryController, Controllers::Ble& bleController);
+        Music(Controllers::MusicService& music, const Controllers::Battery& batteryController, const Controllers::Ble& bleController);
 
         ~Music() override;
 
