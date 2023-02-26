@@ -53,12 +53,12 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
                                  Controllers::HeartRateController& heartRateController,
                                  Controllers::MotionController& motionController)
   : currentDateTime {{}},
+    statusIcons(batteryController, bleController),
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController},
-    statusIcons(batteryController, bleController){
+    motionController {motionController}{
 
   sHour = 99;
   sMinute = 99;

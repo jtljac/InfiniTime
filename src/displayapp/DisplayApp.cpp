@@ -134,8 +134,8 @@ void DisplayApp::InitHw() {
 
 void DisplayApp::LoadPreviousScreen() {
   FullRefreshDirections returnDirection;
-  auto [app, direction] = returnAppStack.Pop();
-  switch (direction) {
+  ReturnStackObject stackObject = returnAppStack.Pop();
+  switch (stackObject.direction) {
     case FullRefreshDirections::Up:
       returnDirection = FullRefreshDirections::Down;
       break;
@@ -152,7 +152,7 @@ void DisplayApp::LoadPreviousScreen() {
       returnDirection = FullRefreshDirections::None;
       break;
   }
-  LoadScreen(app, returnDirection);
+  LoadScreen(stackObject.application, returnDirection);
 }
 
 TouchEvents DisplayApp::LoadDirToReturnSwipe(DisplayApp::FullRefreshDirections refreshDirection) {

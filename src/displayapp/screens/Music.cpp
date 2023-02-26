@@ -49,10 +49,10 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
  */
 Music::Music(
     Pinetime::Controllers::MusicService& music,
-    Pinetime::Controllers::Battery& batteryController,
-    Pinetime::Controllers::Ble& bleController)
-    : musicService(music),
-      statusIcons(batteryController, bleController) {
+    const Pinetime::Controllers::Battery& batteryController,
+    const Pinetime::Controllers::Ble& bleController)
+    : statusIcons(batteryController, bleController),
+      musicService(music) {
   lv_obj_t* label;
 
   lv_style_init(&btn_style);
