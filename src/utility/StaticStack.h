@@ -9,6 +9,7 @@ namespace Pinetime {
       T Pop();
       void Push(T element);
       void Reset();
+      bool Empty();
       T Top();
 
     private:
@@ -40,8 +41,15 @@ namespace Pinetime {
     }
 
     template <typename T, size_t N>
+    bool StaticStack<T, N>::Empty() {
+      return stackPointer == 0;
+    }
+
+    template <typename T, size_t N>
     T StaticStack<T, N>::Top() {
       return elementArray[stackPointer - 1];
     }
+
+
   }
 }

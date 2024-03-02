@@ -112,6 +112,9 @@ namespace Pinetime {
 
       std::unique_ptr<Screens::Screen> currentScreen;
 
+      std::array<Apps, 5> homeRow = {Apps::Clock, Apps::Music, Apps::HeartRate, Apps::Steps, Apps::QuickSettings};
+      uint8_t homeIndex = 0;
+
       Apps currentApp = Apps::None;
       Apps returnToApp = Apps::None;
       FullRefreshDirections returnDirection = FullRefreshDirections::None;
@@ -121,6 +124,8 @@ namespace Pinetime {
       static void Process(void* instance);
       void InitHw();
       void Refresh();
+      bool IsCurrentlyHomeRow();
+      void LoadHomeScreen(FullRefreshDirections direction = FullRefreshDirections::Down);
       void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void PushMessageToSystemTask(Pinetime::System::Messages message);

@@ -254,6 +254,10 @@ void DisplayApp::Refresh() {
         lv_disp_trig_activity(nullptr);
         ApplyBrightness();
         state = States::Running;
+        if (IsCurrentlyHomeRow()) {
+          homeIndex = 0;
+          LoadHomeScreen(FullRefreshDirections::None);
+        }
         break;
       case Messages::UpdateBleConnection:
         //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
@@ -310,23 +314,41 @@ void DisplayApp::Refresh() {
           }
         };
         if (!currentScreen->OnTouchEvent(gesture)) {
-          if (currentApp == Apps::Clock) {
+          if (IsCurrentlyHomeRow()) {
             switch (gesture) {
               case TouchEvents::SwipeUp:
+                homeIndex = 0;
                 LoadNewScreen(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
                 break;
               case TouchEvents::SwipeDown:
                 LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
                 break;
               case TouchEvents::SwipeRight:
-                LoadNewScreen(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
+                if (homeIndex == 0) {
+                  homeIndex = homeRow.size() - 1;
+                } else {
+                  --homeIndex;
+                }
+
+                LoadHomeScreen(FullRefreshDirections::RightAnim);
                 break;
+              case TouchEvents::SwipeLeft:
+                ++homeIndex;
+              if (homeIndex == homeRow.size()) {
+                homeIndex = 0;
+              }
+
+              LoadHomeScreen(DisplayApp::FullRefreshDirections::LeftAnim);
+              break;
               case TouchEvents::DoubleTap:
                 PushMessageToSystemTask(System::Messages::GoToSleep);
                 break;
               default:
                 break;
             }
+          } else if (appStackDirections.Empty() && gesture == TouchEvents::SwipeDown) {
+            homeIndex = 0;
+            LoadHomeScreen();
           } else if (gesture == LoadDirToReturnSwipe(appStackDirections.Top())) {
             LoadPreviousScreen();
           }
@@ -336,7 +358,7 @@ void DisplayApp::Refresh() {
       } break;
       case Messages::ButtonPushed:
         if (!currentScreen->OnButtonPushed()) {
-          if (currentApp == Apps::Clock) {
+          if (IsCurrentlyHomeRow()) {
             PushMessageToSystemTask(System::Messages::GoToSleep);
           } else {
             LoadPreviousScreen();
@@ -345,15 +367,14 @@ void DisplayApp::Refresh() {
         break;
       case Messages::ButtonLongPressed:
         if (currentApp != Apps::Clock) {
+          homeIndex = 0;
           if (currentApp == Apps::Notifications) {
-            LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
-          } else if (currentApp == Apps::QuickSettings) {
-            LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+            LoadHomeScreen(DisplayApp::FullRefreshDirections::Up);
+          } else if (IsCurrentlyHomeRow()) {
+            LoadHomeScreen(DisplayApp::FullRefreshDirections::None);
           } else {
-            LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
+            LoadHomeScreen(DisplayApp::FullRefreshDirections::Down);
           }
-          appStackDirections.Reset();
-          returnAppStack.Reset();
         }
         break;
       case Messages::ButtonLongerPressed:
@@ -377,7 +398,8 @@ void DisplayApp::Refresh() {
         // What should happen here?
         break;
       case Messages::Chime:
-        LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+        homeIndex = 0;
+        LoadHomeScreen(DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
         break;
       case Messages::OnChargingEvent:
@@ -400,6 +422,12 @@ void DisplayApp::Refresh() {
 void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction) {
   nextApp = app;
   nextDirection = direction;
+}
+
+void DisplayApp::LoadHomeScreen(FullRefreshDirections direction) {
+  StartApp(homeRow[homeIndex], direction);
+  returnAppStack.Reset();
+  appStackDirections.Reset();
 }
 
 void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
@@ -447,6 +475,15 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
         currentScreen.reset(userWatchFaces[0].create(controllers));
       }
     } break;
+    case Apps::Music:
+      currentScreen.reset(AppTraits<Apps::Music>::Create(controllers));
+      break;
+    case Apps::HeartRate:
+      currentScreen.reset(AppTraits<Apps::HeartRate>::Create(controllers));
+      break;
+    case Apps::Steps:
+      currentScreen.reset(AppTraits<Apps::Steps>::Create(controllers));
+      break;
     case Apps::Error:
       currentScreen = std::make_unique<Screens::Error>(bootError);
       break;
@@ -632,4 +669,7 @@ void DisplayApp::ApplyBrightness() {
     brightness = Controllers::BrightnessController::Levels::High;
   }
   brightnessController.Set(brightness);
+}
+bool DisplayApp::IsCurrentlyHomeRow() {
+  return std::find(homeRow.begin(), homeRow.end(), currentApp) != homeRow.end();
 }
