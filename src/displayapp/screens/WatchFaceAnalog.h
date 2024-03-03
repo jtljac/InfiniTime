@@ -56,6 +56,8 @@ namespace Pinetime {
         using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
+        lv_obj_t* bg_clock_img;
+
         lv_obj_t* minor_scales;
         lv_obj_t* major_scales;
 

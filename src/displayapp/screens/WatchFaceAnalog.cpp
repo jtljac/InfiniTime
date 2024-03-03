@@ -264,7 +264,6 @@ const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST uint8_t bg_clock_map[] = {
 
 static lv_img_dsc_t bg_clock;
 
-
 namespace {
   constexpr int16_t HourLength = 70;
   constexpr int16_t MinuteLength = 90;
@@ -320,8 +319,6 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   sMinute = 99;
   sSecond = 99;
 
-
-
   bg_clock.header.cf = LV_IMG_CF_INDEXED_2BIT;
   bg_clock.header.always_zero = 0;
   bg_clock.header.reserved = 0;
@@ -329,7 +326,7 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   bg_clock.header.h = 240;
   bg_clock.data_size = 14416;
   bg_clock.data = bg_clock_map;
-  lv_obj_t* bg_clock_img = lv_img_create(lv_scr_act(), nullptr);
+  bg_clock_img = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_src(bg_clock_img, &bg_clock);
   lv_obj_align(bg_clock_img, nullptr, LV_ALIGN_CENTER, 0, 0);
 
@@ -358,16 +355,20 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_align(centre, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_radius(centre, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 10);
 
+
   batteryIcon.Create(lv_scr_act());
   lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+
 
   plugIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(plugIcon, Symbols::plug);
   lv_obj_align(plugIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
+
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(bleIcon, "");
   lv_obj_align(bleIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, -30, 0);
+
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
