@@ -18,6 +18,8 @@ namespace Pinetime {
     class Battery;
     class Ble;
     class NotificationManager;
+    class HeartRateController;
+    class MotionController;
   }
 
   namespace Applications {
@@ -29,7 +31,10 @@ namespace Pinetime {
                         const Controllers::Battery& batteryController,
                         const Controllers::Ble& bleController,
                         Controllers::NotificationManager& notificationManager,
-                        Controllers::Settings& settingsController);
+                        Controllers::Settings& settingsController,
+                        Controllers::HeartRateController& heartRateController,
+                        Controllers::MotionController& motionController,
+                        Controllers::SimpleWeatherService& weather);
 
         ~WatchFaceAnalog() override;
 
@@ -43,6 +48,11 @@ namespace Pinetime {
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         Utility::DirtyValue<bool> notificationState {false};
+        Utility::DirtyValue<uint32_t> stepCount {};
+        Utility::DirtyValue<uint8_t> heartbeat {};
+        Utility::DirtyValue<bool> heartbeatRunning {};
+        Utility::DirtyValue<std::optional<Pinetime::Controllers::SimpleWeatherService::CurrentWeather>> currentWeather {};
+
         using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
@@ -71,8 +81,17 @@ namespace Pinetime {
 
         lv_obj_t* label_date_day;
         lv_obj_t* plugIcon;
-        lv_obj_t* notificationIcon;
         lv_obj_t* bleIcon;
+        lv_obj_t* notificationIcon;
+        lv_obj_t* heartbeatContainer;
+        lv_obj_t* heartbeatIcon;
+        lv_obj_t* heartbeatValue;
+        lv_obj_t* stepContainer;
+        lv_obj_t* stepIcon;
+        lv_obj_t* stepValue;
+        lv_obj_t* weatherContainer;
+        lv_obj_t* weatherIcon;
+        lv_obj_t* temperature;
 
         BatteryIcon batteryIcon;
 
@@ -81,6 +100,9 @@ namespace Pinetime {
         const Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
+        Controllers::HeartRateController& heartRateController;
+        Controllers::MotionController& motionController;
+        Controllers::SimpleWeatherService& weatherService;
 
         void UpdateClock();
         void SetBatteryIcon();
@@ -99,7 +121,10 @@ namespace Pinetime {
                                             controllers.batteryController,
                                             controllers.bleController,
                                             controllers.notificationManager,
-                                            controllers.settingsController);
+                                            controllers.settingsController,
+                                            controllers.heartRateController,
+                                            controllers.motionController,
+                                             *controllers.weatherController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

@@ -4,7 +4,11 @@
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/WeatherSymbols.h"
 #include "displayapp/screens/NotificationIcon.h"
+#include "components/heartrate/HeartRateController.h"
+#include "components/motion/MotionController.h"
+#include "components/ble/SimpleWeatherService.h"
 #include "components/settings/Settings.h"
 #include "displayapp/InfiniTimeTheme.h"
 
@@ -296,14 +300,21 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
                                  const Controllers::Battery& batteryController,
                                  const Controllers::Ble& bleController,
                                  Controllers::NotificationManager& notificationManager,
-                                 Controllers::Settings& settingsController)
+                                 Controllers::Settings& settingsController,
+                                 Controllers::HeartRateController& heartRateController,
+                                 Controllers::MotionController& motionController,
+                                 Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
     batteryIcon(true),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
     notificationManager {notificationManager},
-    settingsController {settingsController} {
+    settingsController {settingsController},
+    heartRateController {heartRateController},
+    motionController {motionController},
+    weatherService {weatherService}
+    {
 
   sHour = 99;
   sMinute = 99;
@@ -362,6 +373,54 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+
+
+  weatherContainer = lv_cont_create(lv_scr_act(), nullptr);
+  lv_obj_align(weatherContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, -49);
+  lv_cont_set_layout(weatherContainer, LV_LAYOUT_ROW_MID);
+  lv_cont_set_fit(weatherContainer, LV_FIT_TIGHT);
+  lv_obj_set_style_local_bg_opa(weatherContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  weatherIcon = lv_label_create(weatherContainer, nullptr);
+  lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
+  lv_label_set_text(weatherIcon, "");
+  lv_obj_set_auto_realign(weatherIcon, true);
+
+  temperature = lv_label_create(weatherContainer, nullptr);
+  lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lv_label_set_text(temperature, "");
+
+
+  heartbeatContainer = lv_cont_create(lv_scr_act(), nullptr);
+  lv_obj_align(heartbeatContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 63);
+  lv_cont_set_layout(heartbeatContainer, LV_LAYOUT_ROW_MID);
+  lv_cont_set_fit(heartbeatContainer, LV_FIT_TIGHT);
+  lv_obj_set_style_local_bg_opa(heartbeatContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  heartbeatIcon = lv_label_create(heartbeatContainer, nullptr);
+  lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
+  lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
+
+  heartbeatValue = lv_label_create(heartbeatContainer, nullptr);
+  lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
+  lv_label_set_text_static(heartbeatValue, "");
+
+
+  stepContainer = lv_cont_create(lv_scr_act(), nullptr);
+  lv_obj_align(stepContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 35);
+  lv_cont_set_layout(stepContainer, LV_LAYOUT_ROW_MID);
+  lv_cont_set_fit(stepContainer, LV_FIT_TIGHT);
+  lv_obj_set_style_local_bg_opa(stepContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  stepIcon = lv_label_create(stepContainer, nullptr);
+  lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
+  lv_label_set_text_static(stepIcon, Symbols::shoe);
+
+  stepValue = lv_label_create(stepContainer, nullptr);
+  lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
+  lv_label_set_text_static(stepValue, "0");
+
 
   // Date - Day / Week day
 
@@ -512,5 +571,46 @@ void WatchFaceAnalog::Refresh() {
     if (currentDate.IsUpdated()) {
       lv_label_set_text_fmt(label_date_day, "%s\n%02i", dateTimeController.DayOfWeekShortToString(), dateTimeController.Day());
     }
+  }
+
+
+  heartbeat = heartRateController.HeartRate();
+  heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
+  if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
+    if (heartbeatRunning.Get()) {
+      lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
+      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
+    } else {
+      lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
+      lv_label_set_text_static(heartbeatValue, "");
+    }
+
+    lv_obj_realign(heartbeatContainer);
+  }
+
+  stepCount = motionController.NbSteps();
+  if (stepCount.IsUpdated()) {
+    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
+    lv_obj_realign(stepContainer);
+  }
+
+  currentWeather = weatherService.Current();
+  if (currentWeather.IsUpdated()) {
+    auto optCurrentWeather = currentWeather.Get();
+    if (optCurrentWeather) {
+      int16_t temp = optCurrentWeather->temperature;
+      char tempUnit = 'C';
+      if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
+        temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
+        tempUnit = 'F';
+      }
+      temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
+      lv_label_set_text_fmt(temperature, temp < 0 ? "%d°%c" : " %d°%c", temp, tempUnit);
+      lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
+    } else {
+      lv_label_set_text_static(temperature, "");
+      lv_label_set_text(weatherIcon, "");
+    }
+    lv_obj_realign(weatherContainer);
   }
 }
